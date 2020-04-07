@@ -1,7 +1,7 @@
 package com.springbatch.services;
 
 import com.springbatch.beans.KycSaveDataResponse;
-import com.springbatch.dao.BatchDao;
+import com.springbatch.dao.DaoClass;
 import com.springbatch.entity.KycCustomerData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,9 @@ import java.util.Date;
 public class BatchServices {
 
     @Autowired
-    BatchDao batchDao;
+    DaoClass daoClass;
 
-    public KycSaveDataResponse saveData(String kycData, String cif) {
+    public KycSaveDataResponse saveData(String kycData, String cif) throws Exception{
 
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMHHmmssSSS");
@@ -29,7 +29,7 @@ public class BatchServices {
         kycCustomerData.setStatus("Initiated");
         kycCustomerData.setCreatedOn(new Date());
 
-        batchDao.saveData(kycCustomerData);
+        daoClass.save(kycCustomerData);
 
         KycSaveDataResponse kycSaveDataResponse = new KycSaveDataResponse();
         kycSaveDataResponse.setStatusCode("0");

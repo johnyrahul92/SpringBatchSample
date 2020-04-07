@@ -39,16 +39,6 @@ public class BatchController {
 	@Qualifier("controllerJob")
 	Job controllerJob;
 
-	@GetMapping("/test")
-	public String testCall() {
-		return "Hello world";
-	}
-	
-	@GetMapping("/test1")
-	public String testCall1() {
-		return "Hello world1";
-	}
-
 	@GetMapping("/startJob")
 	public String executeJob() throws Exception {
 
@@ -80,7 +70,7 @@ public class BatchController {
 	@Consumes("Application/json")
 	@Produces("Application/json")
 	@ApiOperation(value = "To save the json in the Database", response = KycSaveDataResponse.class)
-	public KycSaveDataResponse saveData(@RequestBody String kycData, @RequestHeader Map<String, Object> headers) {
+	public KycSaveDataResponse saveData(@RequestBody String kycData, @RequestHeader Map<String, Object> headers) throws Exception {
 		return batchServices.saveData(kycData, headers.get("cif").toString());
 	}
 }
