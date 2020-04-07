@@ -1,5 +1,8 @@
 package com.springbatch.controller;
 
+import com.springbatch.beans.KycSaveDataResponse;
+import com.springbatch.services.BatchServices;
+import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.BatchStatus;
@@ -10,18 +13,24 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.Api;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/kyc/queue")
 @Api(value = "Batch Processing")
+@CrossOrigin
 public class BatchController {
 
 	private static final Logger LOGGER = LogManager.getLogger(BatchController.class);
+
+	@Autowired
+	BatchServices batchServices;
 
 	@Autowired
 	JobLauncher jobLauncher;
@@ -67,4 +76,11 @@ public class BatchController {
 
 	}
 
+	@PostMapping("/saveData")
+	@Consumes("Application/json")
+	@Produces("Application/json")
+	@ApiOperation(value = "To save the json in the Database", response = KycSaveDataResponse.class)
+	public KycSaveDataResponse saveData(@RequestBody String kycData, @RequestHeader Map<String, Object> headers) {
+		return batchServices.saveData(kycData, headers.get("cif").toString());
+	}
 }
