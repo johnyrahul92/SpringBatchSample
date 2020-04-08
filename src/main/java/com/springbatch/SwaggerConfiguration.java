@@ -26,7 +26,7 @@ public class SwaggerConfiguration {
     private static final String STRING = "string";
 
     @Bean
-    public ApiInfo beneficiaryApiInfo() {
+    public ApiInfo kycBatchApiInfo() {
         final ApiInfoBuilder builder = new ApiInfoBuilder()
                 .title("API for Spring batch program for KYC updation")
                 .version("1.0")
@@ -36,7 +36,7 @@ public class SwaggerConfiguration {
     }
 
     @Bean
-    public Docket beneficiaryApiDocket() {
+    public Docket kycBatchApiDocket() {
         List<Parameter> internalAPI = new ArrayList<>();
         ParameterBuilder params = new ParameterBuilder();
 
@@ -51,7 +51,7 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
                 .paths(PathSelectors.regex("/kyc/queue.*"))
                 .build().pathMapping("/")
-                .apiInfo(beneficiaryApiInfo())
+                .apiInfo(kycBatchApiInfo())
                 .groupName("kycQueue")
                 .useDefaultResponseMessages(false)
                 .globalOperationParameters(internalAPI);

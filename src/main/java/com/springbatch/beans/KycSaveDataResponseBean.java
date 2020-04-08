@@ -1,6 +1,6 @@
 package com.springbatch.beans;
 
-public class KycSaveDataResponse {
+public class KycSaveDataResponseBean {
 
     private String statusCode;
     private String statusDescription;

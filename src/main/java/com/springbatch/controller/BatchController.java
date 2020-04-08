@@ -1,8 +1,13 @@
 package com.springbatch.controller;
 
-import com.springbatch.beans.KycSaveDataResponse;
+import com.springbatch.beans.ErrorResponseBean;
+import com.springbatch.beans.KycSaveDataResponseBean;
+import com.springbatch.exception.ErrorMessageHandling;
+import com.springbatch.exception.PortalException;
 import com.springbatch.services.BatchServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.BatchStatus;
@@ -13,12 +18,15 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.Api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -28,6 +36,9 @@ import java.util.Map;
 public class BatchController {
 
 	private static final Logger LOGGER = LogManager.getLogger(BatchController.class);
+
+	@Autowired
+    ErrorMessageHandling errorMessageHandling;
 
 	@Autowired
 	BatchServices batchServices;
@@ -69,8 +80,25 @@ public class BatchController {
 	@PostMapping("/saveData")
 	@Consumes("Application/json")
 	@Produces("Application/json")
-	@ApiOperation(value = "To save the json in the Database", response = KycSaveDataResponse.class)
-	public KycSaveDataResponse saveData(@RequestBody String kycData, @RequestHeader Map<String, Object> headers) throws Exception {
-		return batchServices.saveData(kycData, headers.get("cif").toString());
-	}
+	@ApiOperation(value = "To save the json in the Database")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Date saved successfully in the table.", response = KycSaveDataResponseBean.class),
+            @ApiResponse(code = 400, message = "Error while saving data in the table.", response = ErrorResponseBean.class)
+    })
+	public KycSaveDataResponseBean saveData(@RequestBody String kycData, @RequestHeader Map<String, Object> headers) throws PortalException {
+        try {
+            return batchServices.saveData(kycData, headers.get("cif").toString());
+        } catch (Exception e) {
+            throw new PortalException("KYC101");
+        }
+    }
+
+    @ExceptionHandler(PortalException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponseBean> portalErrorException(PortalException ex) throws IOException {
+        ErrorResponseBean portalErrorResponseBean = errorMessageHandling.errorHandlingResponse(ex.getErrCode());
+        return new ResponseEntity<>(portalErrorResponseBean, HttpStatus.BAD_REQUEST);
+    }
 }
+
+
