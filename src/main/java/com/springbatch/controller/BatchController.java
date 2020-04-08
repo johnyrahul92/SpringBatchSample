@@ -1,13 +1,11 @@
 package com.springbatch.controller;
 
-import com.springbatch.beans.ErrorResponseBean;
-import com.springbatch.beans.KycSaveDataResponseBean;
-import com.springbatch.exception.ErrorMessageHandling;
-import com.springbatch.exception.PortalException;
-import com.springbatch.services.BatchServices;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import java.io.IOException;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.BatchStatus;
@@ -20,14 +18,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.springbatch.beans.ErrorResponseBean;
+import com.springbatch.beans.KycSaveDataResponseBean;
+import com.springbatch.exception.ErrorMessageHandling;
+import com.springbatch.exception.PortalException;
+import com.springbatch.services.BatchServices;
 
 import io.swagger.annotations.Api;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import java.io.IOException;
-import java.util.Map;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/kyc/queue")

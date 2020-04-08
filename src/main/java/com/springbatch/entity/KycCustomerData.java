@@ -1,10 +1,11 @@
 package com.springbatch.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Entity
 @Table(name = "KYCCUSTOMERDATATABLE")
@@ -87,4 +88,12 @@ public class KycCustomerData {
     public void setUpdatedOn(Date updatedOn) {
         this.updatedOn = updatedOn;
     }
+
+	@Override
+	public String toString() {
+		return "KycCustomerData [id=" + id + ", kycData=" + kycData + ", cif=" + cif + ", count=" + count + ", status="
+				+ status + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + "]";
+	}
+    
+    
 }

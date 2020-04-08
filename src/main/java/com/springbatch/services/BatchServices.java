@@ -1,19 +1,29 @@
 package com.springbatch.services;
 
+import java.util.Date;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.springbatch.beans.KycSaveDataResponseBean;
 import com.springbatch.dao.DaoClass;
 import com.springbatch.entity.KycCustomerData;
 import com.springbatch.utility.BatchUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 public class BatchServices {
 
+	private static final Logger LOGGER = LogManager.getLogger(BatchServices.class);
+	
     @Autowired
     DaoClass daoClass;
+    
+    @Value("${esb.retry.attempt.limit}")
+    private Long attemptLimit;
 
     public KycSaveDataResponseBean saveData(String kycData, String cif) throws Exception{
 
@@ -34,5 +44,9 @@ public class BatchServices {
         kycSaveDataResponseBean.setStatusDescription("Success");
         kycSaveDataResponseBean.setReferenceNo(kycCustomerData.getId());
         return kycSaveDataResponseBean;
+    }
+
+    public List<KycCustomerData> getData() throws Exception{
+    	return daoClass.findByStatusAndCountLessThan("Failed", attemptLimit);
     }
 }
