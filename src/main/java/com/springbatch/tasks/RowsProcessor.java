@@ -39,14 +39,13 @@ public class RowsProcessor implements Tasklet, StepExecutionListener {
 		          .getJobExecution()
 		          .getExecutionContext();
 		        this.rows = (List<KycCustomerData>)executionContext.get("rows");
-		LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-		LOGGER.info("RowsProcessor initialized.");
+		LOGGER.debug("The time is now {}", dateFormat.format(new Date()));
+		LOGGER.debug("RowsProcessor initialized.");
     }
 	 
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception 
     {
-        LOGGER.info("-------------------START-------------------------");
-        LOGGER.info("ESB");
+        LOGGER.debug("-------------------START-------------------------");
         final String uri = "http://localhost:8080/esb/initiate";
         for(KycCustomerData row:rows) {
         	KycRequestBean kycRequestBean = new KycRequestBean();
@@ -61,13 +60,13 @@ public class RowsProcessor implements Tasklet, StepExecutionListener {
     	    
         	//TODO: Update status and increment counter
         }
-        LOGGER.info("-------------------END-------------------------");
+        LOGGER.debug("-------------------END-------------------------");
         return RepeatStatus.FINISHED;
     }  
     
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-    	LOGGER.info("RowsProcessor ended.");
+    	LOGGER.debug("RowsProcessor ended.");
         return ExitStatus.COMPLETED;
     }
 }

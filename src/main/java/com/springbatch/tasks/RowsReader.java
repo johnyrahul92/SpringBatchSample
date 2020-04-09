@@ -33,19 +33,19 @@ public class RowsReader implements Tasklet, StepExecutionListener {
 	@Override
     public void beforeStep(StepExecution stepExecution) {
 		rows = new ArrayList<>();
-		LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-		LOGGER.info("RowsReader initialized.");
+		LOGGER.debug("The time is now {}", dateFormat.format(new Date()));
+		LOGGER.debug("RowsReader initialized.");
     }
 	 
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception 
     {
         rows = batchServices.getKycFilteredData();
-        LOGGER.info("-------------------START-------------------------");
+        LOGGER.debug("-------------------START-------------------------");
         LOGGER.info("Rows read");
         for(KycCustomerData row:rows) {
         	LOGGER.info(row.toString());
         }
-        LOGGER.info("-------------------END-------------------------");
+        LOGGER.debug("-------------------END-------------------------");
         return RepeatStatus.FINISHED;
     }  
     
@@ -55,7 +55,7 @@ public class RowsReader implements Tasklet, StepExecutionListener {
         .getJobExecution()
         .getExecutionContext()
         .put("rows", this.rows);
-    	LOGGER.info("RowsReader ended.");
+    	LOGGER.debug("RowsReader ended.");
         return ExitStatus.COMPLETED;
     }
 }

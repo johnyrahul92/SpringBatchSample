@@ -40,9 +40,9 @@ public class SwaggerConfiguration {
         List<Parameter> internalAPI = new ArrayList<>();
         ParameterBuilder params = new ParameterBuilder();
 
-        internalAPI.add(params.name("content-type").modelRef(new ModelRef(STRING)).parameterType(HEADER).required(false).description("Content type").build());
+        internalAPI.add(params.name("kycrefno").modelRef(new ModelRef(STRING)).parameterType(HEADER).required(true).description("Kyc ref number created in MS").build());
 
-        internalAPI.add(params.name("accept").modelRef(new ModelRef(STRING)).parameterType(HEADER).required(false).description("Accept Type").build());
+        internalAPI.add(params.name("status").modelRef(new ModelRef(STRING)).parameterType(HEADER).required(true).description("KYC request status").build());
 
         internalAPI.add(params.name("cif").modelRef(new ModelRef(STRING)).parameterType(HEADER).required(true).description("CIF").build());
 

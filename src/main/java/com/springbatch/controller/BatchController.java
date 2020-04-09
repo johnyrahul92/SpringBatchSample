@@ -97,8 +97,11 @@ public class BatchController {
     })
 	public KycSaveDataResponseBean saveData(@RequestBody String kycData, @RequestHeader Map<String, Object> headers) throws PortalException {
         try {
-            return batchServices.saveData(kycData, headers.get("cif").toString());
-        } catch (Exception e) {
+            return batchServices.saveOrUpdateKYCData(kycData, headers);
+        } catch (PortalException e) {
+			throw new PortalException("KYC102");
+		}
+        catch (Exception e) {
             throw new PortalException("KYC101");
         }
     }
