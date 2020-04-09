@@ -1,7 +1,6 @@
 package com.springbatch.tasks;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,37 +12,54 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
+import com.springbatch.beans.KycRequestBean;
 import com.springbatch.entity.KycCustomerData;
 import com.springbatch.services.BatchServices;
 
 @Component
-public class RowsReader implements Tasklet, StepExecutionListener {
+public class RowsProcessor implements Tasklet, StepExecutionListener {
 
-	private static final Logger LOGGER = LogManager.getLogger(RowsReader.class);
+	private static final Logger LOGGER = LogManager.getLogger(RowsProcessor.class);
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	private List<KycCustomerData> rows;
 
 	@Autowired
 	BatchServices batchServices;
 	
+	@SuppressWarnings("unchecked")
 	@Override
     public void beforeStep(StepExecution stepExecution) {
-		rows = new ArrayList<>();
+		ExecutionContext executionContext = stepExecution
+		          .getJobExecution()
+		          .getExecutionContext();
+		        this.rows = (List<KycCustomerData>)executionContext.get("rows");
 		LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-		LOGGER.info("RowsReader initialized.");
+		LOGGER.info("RowsProcessor initialized.");
     }
 	 
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception 
     {
-        rows = batchServices.getKycFilteredData();
         LOGGER.info("-------------------START-------------------------");
-        LOGGER.info("Rows read");
+        LOGGER.info("ESB");
+        final String uri = "http://localhost:8080/esb/initiate";
         for(KycCustomerData row:rows) {
-        	LOGGER.info(row.toString());
+        	KycRequestBean kycRequestBean = new KycRequestBean();
+        	kycRequestBean.setUniqueId(row.getId());
+        	kycRequestBean.setKycData(row.getKycData());
+        	
+        	RestTemplate restTemplate = new RestTemplate();
+        	LOGGER.info("Call Rest endpoint with : "+kycRequestBean.toString());
+    	    String result = restTemplate.postForObject(uri, kycRequestBean ,String.class);
+    	    
+    	    LOGGER.info("Response from ESB call : "+result.toString());
+    	    
+        	//TODO: Update status and increment counter
         }
         LOGGER.info("-------------------END-------------------------");
         return RepeatStatus.FINISHED;
@@ -51,11 +67,7 @@ public class RowsReader implements Tasklet, StepExecutionListener {
     
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-    	stepExecution
-        .getJobExecution()
-        .getExecutionContext()
-        .put("rows", this.rows);
-    	LOGGER.info("RowsReader ended.");
+    	LOGGER.info("RowsProcessor ended.");
         return ExitStatus.COMPLETED;
     }
 }

@@ -24,6 +24,9 @@ public class BatchServices {
     
     @Value("${esb.retry.attempt.limit}")
     private Long attemptLimit;
+    
+    @Value("${esb.retry.filter.status}")
+    private String filterStatus;
 
     public KycSaveDataResponseBean saveData(String kycData, String cif) throws Exception{
 
@@ -46,7 +49,7 @@ public class BatchServices {
         return kycSaveDataResponseBean;
     }
 
-    public List<KycCustomerData> getData() throws Exception{
-    	return daoClass.findByStatusAndCountLessThan("Failed", attemptLimit);
+    public List<KycCustomerData> getKycFilteredData() throws Exception{
+    	return daoClass.findByStatusAndCountLessThan(filterStatus, attemptLimit);
     }
 }

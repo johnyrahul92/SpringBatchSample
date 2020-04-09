@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.springbatch.tasks.RowsProcessor;
 import com.springbatch.tasks.RowsReader;
 
 @Configuration
@@ -33,6 +34,9 @@ public class BatchConfig {
     
     @Autowired
     RowsReader rowsReader;
+    
+    @Autowired
+    RowsProcessor rowsProcessor;
     
 	@Autowired
 	@Qualifier("demoJob")
@@ -55,13 +59,20 @@ public class BatchConfig {
                 .tasklet(rowsReader)
                 .build();
     }  
+    
+    @Bean
+    public Step processRows(){
+        return steps.get("processRows")
+                .tasklet(rowsProcessor)
+                .build();
+    } 
      
     @Bean
     public Job demoJob(){
         return jobs.get("demoJob")
                 .incrementer(new RunIdIncrementer())
                 .start(readRows())
-                //.next(stepTwo())
+                .next(processRows())
                 .build();
     }
     

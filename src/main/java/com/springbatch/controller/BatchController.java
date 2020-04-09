@@ -92,7 +92,7 @@ public class BatchController {
 	@Produces("Application/json")
 	@ApiOperation(value = "To save the json in the Database")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Date saved successfully in the table.", response = KycSaveDataResponseBean.class),
+            @ApiResponse(code = 200, message = "Data saved successfully in the table.", response = KycSaveDataResponseBean.class),
             @ApiResponse(code = 400, message = "Error while saving data in the table.", response = ErrorResponseBean.class)
     })
 	public KycSaveDataResponseBean saveData(@RequestBody String kycData, @RequestHeader Map<String, Object> headers) throws PortalException {
