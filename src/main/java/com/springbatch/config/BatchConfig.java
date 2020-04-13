@@ -1,5 +1,6 @@
 package com.springbatch.config;
 
+import com.springbatch.tasks.KycBatchProcessor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -37,9 +38,12 @@ public class BatchConfig {
     
     @Autowired
     RowsProcessor rowsProcessor;
-    
+
+    @Autowired
+    KycBatchProcessor kycBatchProcessor;
+
 	@Autowired
-	@Qualifier("demoJob")
+	@Qualifier("batchJob")
 	Job job;
     
     
@@ -53,7 +57,7 @@ public class BatchConfig {
         JobExecution jobExecution= jobLauncher.run(job, params);
     }
      
-    @Bean
+    /*@Bean
     public Step readRows(){
         return steps.get("readRows")
                 .tasklet(rowsReader)
@@ -74,13 +78,28 @@ public class BatchConfig {
                 .start(readRows())
                 .next(processRows())
                 .build();
+    }*/
+
+    @Bean
+    public Job batchJob() {
+        return jobs.get("batchJob")
+                .incrementer(new RunIdIncrementer())
+                .start(readAndProceed())
+                .build();
     }
-    
+
+    @Bean
+    public Step readAndProceed() {
+        return steps.get("readAndProceed")
+                .tasklet(kycBatchProcessor)
+                .build();
+    }
+
     @Bean
     public Job controllerJob(){
         return jobs.get("controllerJob")
                 .incrementer(new RunIdIncrementer())
-                .start(readRows())
+                .start(readAndProceed())
                 //.next(stepTwo())
                 .build();
     }
