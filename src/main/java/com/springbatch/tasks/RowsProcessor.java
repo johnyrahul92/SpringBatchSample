@@ -67,6 +67,7 @@ public class RowsProcessor implements Tasklet, StepExecutionListener {
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
     	LOGGER.debug("RowsProcessor ended.");
+    	this.rows = null;
         return ExitStatus.COMPLETED;
     }
 }

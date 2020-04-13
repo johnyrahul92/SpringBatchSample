@@ -62,29 +62,18 @@ public class BatchController {
 
 	@GetMapping("/startJob")
 	public String executeJob() throws Exception {
-
 		try {
-
 			JobParameters params = new JobParametersBuilder().addString("JobID", "From Controller").toJobParameters();
-
 			JobExecution jobExecution = jobLauncher.run(controllerJob, params);
-
 			if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
 				LOGGER.info("Success");
 			} else {
 				LOGGER.warn("error batch status failed");
-
 			}
-
 		} catch (Exception e) {
-
 			LOGGER.error(e.getMessage()); // throw new
-	
-
 		}
-		
 		return "Started Job";
-
 	}
 
 	@PostMapping("/saveData")

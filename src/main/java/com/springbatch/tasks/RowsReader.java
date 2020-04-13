@@ -55,6 +55,7 @@ public class RowsReader implements Tasklet, StepExecutionListener {
         .getJobExecution()
         .getExecutionContext()
         .put("rows", this.rows);
+    	this.rows = null;
     	LOGGER.debug("RowsReader ended.");
         return ExitStatus.COMPLETED;
     }
